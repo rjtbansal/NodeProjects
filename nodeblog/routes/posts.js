@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var multer  = require('multer');
-var upload = multer({ dest: 'uploads/' }); //for file uploads
+var upload = multer({ dest: './public/images' }); //for file uploads
 var mongo=require('mongodb');
 var db=require('monk')('localhost/nodeblog'); //monk alternative to mongoose for mongodb..nodeblog is db name
 

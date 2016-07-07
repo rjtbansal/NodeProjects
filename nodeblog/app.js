@@ -23,6 +23,12 @@ var app = express();
 
 app.locals.moment=require('moment');
 
+//function to truncate text
+app.locals.truncateText=function(text,length){
+  var textTruncated=text.substring(0,length);
+  return textTruncated;
+};
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

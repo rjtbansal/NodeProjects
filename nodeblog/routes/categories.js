@@ -3,6 +3,17 @@ var router = express.Router();
 var mongo=require('mongodb');
 var db=require('monk')('localhost/nodeblog'); //monk alternative to mongoose for mongodb..nodeblog is db name
 
+router.get('/show/:category', function(req, res, next) { 
+    var posts=db.get('posts');
+  posts.find({category:req.params.category},{},function(err, posts){
+  res.render('index',{
+    'title':req.params.category,
+    'posts':posts //passing the collection to addpost page
+  });
+  });
+});
+
+
 // endpoint: /categories/add
 router.get('/add', function(req, res, next) { 
   res.render('addcategory',{
@@ -27,7 +38,7 @@ router.post('/add',function(req,res,next){
       "errors":errors
     });
   }else{
-    //getting our posts collection
+    //getting our categories collection
     var categories=db.get('categories');
     
      categories.insert({
