@@ -14,6 +14,7 @@ exports = module.exports = function(app, mongoose) {
   eventSchema.plugin(require('./plugins/pagedFind'));
   eventSchema.index({ pivot: 1 });
   eventSchema.index({ name: 1 });
+  eventSchema.index({description:1});
   eventSchema.index({ venue: 1 });
   eventSchema.index({ date: 1 });
   eventSchema.index({ startTime: 1 });
