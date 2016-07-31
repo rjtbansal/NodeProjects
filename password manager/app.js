@@ -1,6 +1,43 @@
 console.log("Starting password manager");
 
 var storage=require('node-persist');
+var argv=require('yargs')
+        .command('create','Create user account', function(yargs){
+            return yargs.options({
+                name:{
+                    demand: true,
+                    alias: 'n' ,//lets us use it as option like -n instead of --n but multiple letters alias will work with double hyphens
+                    description: 'Name of the organization',
+                    type: 'string'
+
+            },
+            username: {
+                demand:true,
+                alias:'u',
+                description: 'Select your username',
+                type:'string'
+            },
+            password: {
+                demand:true,
+                alias:'p',
+                description: 'Choose your password',
+                type:'string'
+            }
+            });
+        })
+        .command('get','Get user account details',function(yargs){
+            return yargs.options({
+                name:{
+                    demand:true,
+                    alias:'n',
+                    description:'Enter name of the organization',
+                    type:'string'
+                }
+            });
+        })
+        .help('help')
+        .argv;
+
 storage.initSync(); //to initialize variable storage
 
 //setItemSync allows to save variables to our server: arg1: var name; arg2: value..its like key val pair
@@ -38,11 +75,12 @@ function getAccount(accountName) {
     return matchedAccount;
 }
 
-//storage.setItemSync('accounts',[{name:"rajat",username:'rjtbansal',password:'rjt123'}]);
-//createAccount({name:'facebook',username:'fb123',password:'password123'});
-//createAccount({name:'rajat',username:'rjtbansal',password:'password123'});
+var command=argv._[0];
+if(command === 'create'){
+    var createdAccount=createAccount({name: argv.name, username: argv.username, password: argv.password});
+    console.log(createdAccount);
+}else if(command === 'get'){
+    console.log(getAccount(argv.name));
+}
 
-
-var retrieveAccount=getAccount('facebook');
-console.log(retrieveAccount);
 
