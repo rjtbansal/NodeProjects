@@ -1,86 +1,162 @@
-console.log("Starting password manager");
+console.log('starting password manager');
 
-var storage=require('node-persist');
-var argv=require('yargs')
-        .command('create','Create user account', function(yargs){
-            return yargs.options({
-                name:{
-                    demand: true,
-                    alias: 'n' ,//lets us use it as option like -n instead of --n but multiple letters alias will work with double hyphens
-                    description: 'Name of the organization',
-                    type: 'string'
+var crypto = require('crypto-js')
+var storage = require('node-persist');
+storage.initSync();
 
-            },
-            username: {
-                demand:true,
-                alias:'u',
-                description: 'Select your username',
-                type:'string'
-            },
-            password: {
-                demand:true,
-                alias:'p',
-                description: 'Choose your password',
-                type:'string'
-            }
-            });
-        })
-        .command('get','Get user account details',function(yargs){
-            return yargs.options({
-                name:{
-                    demand:true,
-                    alias:'n',
-                    description:'Enter name of the organization',
-                    type:'string'
-                }
-            });
-        })
-        .help('help')
-        .argv;
+var argv = require('yargs')
+	.command('create', 'Create a new account', function (yargs) {
+		yargs.options({
+			name: {
+				demand: true,
+				alias: 'n',
+				description: 'Account name (eg: Twitter, Facebook)',
+				type: 'string'
+			},
+			username: {
+				demand: true,
+				alias: 'u',
+				description: 'Account username or email',
+				type: 'string'
+			},
+			password: {
+				demand: true,
+				alias: 'p',
+				description: 'Account password',
+				type: 'string'
+			},
+			masterPassword: {
+				demand: true,
+				alias: 'm',
+				description: 'Master password',
+				type: 'string'
+			}
+		}).help('help');
+	})
+	.command('get', 'Get an existing account', function (yargs) {
+		yargs.options({
+			name: {
+				demand: true,
+				alias: 'n',
+				description: 'Account name (eg: Twitter, Facebook)',
+				type: 'string'
+			},
+			masterPassword: {
+				demand: true,
+				alias: 'm',
+				description: 'Master password',
+				type: 'string'
+			}
+		}).help('help');
+	})
+	.help('help')
+	.argv;
+var command = argv._[0];
 
-storage.initSync(); //to initialize variable storage
+// create
+//     --name
+//     --username
+//     --password
 
-//setItemSync allows to save variables to our server: arg1: var name; arg2: value..its like key val pair
-//storage.setItemSync('name','rajat');
-// var name=storage.getItemSync('name'); //getting saved item
-// console.log("Saved name: "+name);
+// get
+//     --name
 
-//storage.setItemSync('accounts',[{username: 'rajat', balance:20000}]);
+// account.name Facebook
+// account.username User12!
+// account.password Password123!
 
-//storage.setItemSync('accounts',[{username:'raghav',balance:10000}]);
-//var accounts=storage.getItemSync('accounts');
-// accounts.push({username:'rajat',balance:20000});
-// storage.setItemSync('accounts',accounts);
-//console.log(accounts);
+function getAccounts (masterPassword) {
+	// use getItemSync to fetch accounts
+	var encryptedAccount = storage.getItemSync('accounts');
+	var accounts = [];
 
-function createAccount(account) {
-    var accounts=storage.getItemSync('accounts');
-    if(typeof accounts==='undefined'){
-        accounts=[];
-    }
-    accounts.push(account);
-    storage.setItemSync('accounts',accounts);
-    return account;
+	// decrypt
+	if (typeof encryptedAccount !== 'undefined') {
+		var bytes = crypto.AES.decrypt(encryptedAccount, masterPassword);
+		accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
+	}
+
+	// return accounts array
+	return accounts;
 }
 
-function getAccount(accountName) {
-    var accounts=storage.getItemSync('accounts');
-    var matchedAccount;
-    accounts.forEach(function(account) {
-        if(account.name === accountName){
-            matchedAccount=account;
-        }
-    });
-
-    return matchedAccount;
+function saveAccounts (accounts, masterPassword) {
+	// encrypt accounts
+	var encryptedAccounts = crypto.AES.encrypt(JSON.stringify(accounts), masterPassword);
+	
+	// setItemSync
+	storage.setItemSync('accounts', encryptedAccounts.toString());
+	
+	// return accounts
+	return accounts;
 }
 
-var command=argv._[0];
-if(command === 'create'){
-    var createdAccount=createAccount({name: argv.name, username: argv.username, password: argv.password});
-    console.log(createdAccount);
-}else if(command === 'get'){
-    console.log(getAccount(argv.name));
+function createAccount (account, masterPassword) {
+	var accounts = getAccounts(masterPassword);
+
+	accounts.push(account);
+
+	saveAccounts(accounts, masterPassword);
+
+	return account;
 }
+
+function getAccount (accountName, masterPassword) {
+	var accounts = getAccounts(masterPassword)
+	var matchedAccount;
+
+	accounts.forEach(function (account) {
+		if (account.name === accountName) {
+			matchedAccount = account;
+		}
+	});
+
+	return matchedAccount;
+}
+
+if (command === 'create') {
+	try{
+	var createdAccount = createAccount({
+		name: argv.name,
+		username: argv.username,
+		password: argv.password
+	}, argv.masterPassword);
+	console.log('Account created!');
+	console.log(createdAccount);
+	}catch(err){
+		console.log('Unable to create account');
+	}
+} else if (command === 'get') {
+	try{
+	var fetchedAccount = getAccount(argv.name, argv.masterPassword);
+
+	if (typeof fetchedAccount === 'undefined') {
+		console.log('Account not found');
+	} else {
+		console.log('Account found!');
+		console.log(fetchedAccount);
+	}
+
+	}catch(err){
+		console.log("Unable to fetch account");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
