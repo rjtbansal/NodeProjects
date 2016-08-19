@@ -35,7 +35,7 @@ app.get('/todos/:id',function(req,res){
     }
     
 
-    res.send('Todo requested by id: '+req.params.id);
+    //res.send('Todo requested by id: '+req.params.id);
 });
 
 //api: post todo
@@ -56,6 +56,19 @@ app.post('/todos',function(req,res){
 
     todos.push(body);
     res.json(body);
+});
+
+//api: delete todo
+app.delete('/todos/:id',function(req,res){
+    var todo_id=parseInt(req.params.id,10); 
+    var matched=_.findWhere(todos,{id:todo_id});
+    if(!matched){
+        res.status(404).json({"error":"No todo found with that id"});
+    }
+    else{
+    todos=_.without(todos, matched);
+    res.json(matched);
+}   
 });
 
 app.listen(PORT, function(){
