@@ -63,6 +63,7 @@ app.use(expressValidator({
     };
   }
 }));
+
 //express messages
 app.use(require('connect-flash')());
 app.use(function (req, res, next) {

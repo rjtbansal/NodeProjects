@@ -26,7 +26,7 @@ router.post('/login', passport.authenticate('local',{failureRedirect:'/users/log
     res.redirect('/');
   });
   
- passport.serializeUser(function(user, done) {
+passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
 

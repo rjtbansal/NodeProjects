@@ -3,7 +3,7 @@ var app=express();
 var body_parser=require('body-parser');
 var todos=[];
 var todo_next_id=0;
-
+var _=require('underscore');
 var PORT=process.env.PORT || 3000; 
 
 app.use(body_parser.json()); //attaching middleware to our app 
@@ -20,12 +20,13 @@ app.get('/todos',function(req,res){
 app.get('/todos/:id',function(req,res){
     //by default it will treat todo_id as string so it needs to be converted to int, 2nd arg 10 is base
     var todo_id=parseInt(req.params.id, 10);
-    var matched;
-    todos.forEach(function(todo){
-        if(todo_id === todo.id){
-            matched=todo;
-        }
-    });
+    var matched=_.findWhere(todos,{id:todo_id});
+
+    // todos.forEach(function(todo){
+    //     if(todo_id === todo.id){
+    //         matched=todo;
+    //     }
+    // });
 
     if(matched){
         res.json(matched);
@@ -39,9 +40,20 @@ app.get('/todos/:id',function(req,res){
 
 //api: post todo
 app.post('/todos',function(req,res){
-    var body=req.body;
+    //var body=req.body;
+
+    //_.pick lets me filter fields..from req.body we will only show 'description' and 'completed'
+    var body=_.pick(req.body, 'description', 'completed');
+
+    if( !_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0){ //if completed isnt boolean and description isnt string then return 400
+        return res.status(400).send(); 
+    }
+
+    //trim will delete trailing and leading spaces
+    body.description=body.description.trim();
     body.id=todo_next_id;
     todo_next_id++;
+
     todos.push(body);
     res.json(body);
 });
