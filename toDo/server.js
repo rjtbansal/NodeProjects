@@ -71,6 +71,43 @@ app.delete('/todos/:id',function(req,res){
 }   
 });
 
+//api : update todo
+app.put('/todos/:id', function(req, res){
+   var todo_id=parseInt(req.params.id, 10);
+   var matched=_.findWhere(todos,{id:todo_id});
+   if(!matched){
+       res.status(404).json({"error":"No todo found with that id"});
+   }
+   else{
+       var body=_.pick(req.body, 'description', 'completed');
+       var valid_attributes = {}; 
+
+       //if completed property exists and its of type boolean then attributes are valid and we can add them to valid_attributes object
+       if(body.hasOwnProperty('completed')  && _.isBoolean(body.completed)){
+           valid_attributes.completed = body.completed;
+       }
+       //if property exists but isnt boolean then its bad
+       else if(body.hasOwnProperty('completed')){
+           res.status(400).send();
+       }else{
+
+       }
+
+       if(body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0){
+           valid_attributes.description = body.description;
+       }
+       else if(body.hasOwnProperty('description')){
+           res.status(400).send();
+       }else{
+
+       }
+
+       //underscore extend allows objects to be copied. Here we are overriding matched with content in valid_attributes
+       _.extend(matched, valid_attributes);
+       res.json(matched);
+   } 
+});
+
 app.listen(PORT, function(){
     console.log('Express listening on port '+PORT);
 });
