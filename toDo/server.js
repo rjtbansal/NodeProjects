@@ -12,9 +12,9 @@ app.get('/',function(req,res){
 });
 
 //api: GET todos
-app.get('/todos',function(req,res){
-    res.json(todos);
-});
+// app.get('/todos',function(req,res){
+//     res.json(todos);
+// });
 
 //api: GET todos/:id
 app.get('/todos/:id',function(req,res){
@@ -36,6 +36,27 @@ app.get('/todos/:id',function(req,res){
     
 
     //res.send('Todo requested by id: '+req.params.id);
+});
+
+//api: GET /todos?completed=true&q=
+app.get('/todos',function(req,res){
+    var query_params=req.query;
+    var filtered_todos=todos;
+
+    if(query_params.hasOwnProperty('completed')  && query_params.completed === 'true'){
+       filtered_todos= _.where(filtered_todos, {completed:true});
+    }
+    else if(query_params.hasOwnProperty('completed')  && query_params.completed === 'false'){
+      filtered_todos= _.where(filtered_todos, {completed:false});
+    }
+
+    if(query_params.hasOwnProperty('q') && query_params.q.length > 0){
+        filtered_todos=_.filter(filtered_todos, function(todo){
+            return (todo.description.indexOf(query_params.q) !== -1);
+        });
+    }
+
+    res.json(filtered_todos);
 });
 
 //api: post todo
