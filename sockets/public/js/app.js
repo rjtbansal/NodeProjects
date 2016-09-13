@@ -9,6 +9,7 @@ socket.on('connect', function(){
 //arg1 : event_name (check server.js) , arg2 : callback with message object
 socket.on('message', function(message){
     console.log('New message from server --> '+message.text); //text was are key in the message object(check server.js)
+    $('.messages').append('<p>'+message.text+'</p>');
 });
 
 //Handle message submit through form
