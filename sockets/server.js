@@ -4,6 +4,8 @@ var app=express();
 var http = require('http').Server(app); //tells node to start a new server and use this express app as boiler plate..so whatever express app
 //is listening to the server is listening to as well
 var io=require('socket.io')(http);
+
+//connection event asssociated with server side
 io.on('connection',function(){
     console.log("User connected via socket io");
 });
