@@ -1,12 +1,18 @@
 /*calling getQueryVariable from queryparams.js to get query params*/
 var name = getQueryVariable('name') || 'Default';
-var room = getQueryVariable('room');
+var room = getQueryVariable('room') || 'Random Room';
 
 var socket=io();
 
+$('.roomname').html(room);
 /*connect event associated with client side*/
 socket.on('connect', function(){
     console.log('Connected to socket io server');
+
+    socket.emit('joinRoom',{
+        name:name,
+        room:room
+    });
 });
 
 //listening to custom event 
