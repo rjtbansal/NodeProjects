@@ -12,8 +12,8 @@ var client_info={};
 io.on('connection',function(socket){
     console.log("User connected via socket io");
 
-    socket.on('joinRoom',function(req){
-       client_info[socket.id]=req; //attaching socket's id(again id is inbuilt) to client info object(cusstom obj)
+    socket.on('joinRoom',function(req){ /*Once joinRoom event comes in the callback has req object which has room details*/
+       client_info[socket.id]=req; //attaching socket's id(again id is inbuilt and generates random id) to client info object(cusstom obj)
        socket.join(req.room); //get attached to room..join is inbuilt socketio function
        socket.broadcast.to(req.room).emit('message',{
            name:'System',
@@ -27,7 +27,7 @@ io.on('connection',function(socket){
         //socket.broadcast.emit sends the message to every reciever except sender..use 'io.emit'' if you also want to send it msg sender
         //socket.broadcast.emit('message',message);
         message.timestamp=moment().valueOf();
-        io.to(client_info[socket.id].room).emit('message',message);
+        io.to(client_info[socket.id].room).emit('message',message); //getting client's room info
     });
     //emitting our events..here message is an event..it can be anything based on our requirements
     //first argument in emit is the event name and 2ns argument is the value..its best to use an object to store enough data since only 1 argument can be passed

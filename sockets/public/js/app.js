@@ -8,7 +8,7 @@ $('.roomname').html(room);
 /*connect event associated with client side*/
 socket.on('connect', function(){
     console.log('Connected to socket io server');
-
+    /*once connected we are emitting joinRoom event with client name and the room name*/
     socket.emit('joinRoom',{
         name:name,
         room:room
