@@ -8,8 +8,9 @@ socket.on('connect', function(){
 //listening to custom event 
 //arg1 : event_name (check server.js) , arg2 : callback with message object
 socket.on('message', function(message){
+    var momentTimestamp=moment.utc(message.timestamp);
     console.log('New message from server --> '+message.text); //text was are key in the message object(check server.js)
-    $('.messages').append('<p>'+message.text+'</p>');
+    $('.messages').append('<p><strong>'+ momentTimestamp.local().format('h:mm a') +'</strong>'+message.text+'</p>');
 });
 
 //Handle message submit through form
