@@ -21,8 +21,9 @@ io.on('connection',function(socket){
     //emitting our events..here message is an event..it can be anything based on our requirements
     //first argument in emit is the event name and 2ns argument is the value..its best to use an object to store enough data since only 1 argument can be passed
     socket.emit('message',{
+        name:'System',
         text : "Welcome to live chat",
-        timestamp : moment().valueOf()
+        timestamp : moment().valueOf() //getting timestamp value as milliseconds
     });
 });
 app.use(express.static(__dirname+'/public'));
