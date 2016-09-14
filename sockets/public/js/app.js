@@ -15,6 +15,7 @@ socket.on('connect', function(){
     });
 });
 
+
 //listening to custom event 
 //arg1 : event_name (check server.js) , arg2 : callback with message object
 socket.on('message', function(message){

@@ -21,6 +21,7 @@ io.on('connection',function(socket){
            timestamp:moment().valueOf()
        })   
     });
+    
     socket.on('message',function(message){
         console.log('Message recieved: '+message.text);
 
@@ -29,6 +30,21 @@ io.on('connection',function(socket){
         message.timestamp=moment().valueOf();
         io.to(client_info[socket.id].room).emit('message',message); //getting client's room info
     });
+
+/*using socket io s disconnect event to disconnect the user*/
+    socket.on('disconnect',function(){
+        var userdata=client_info[socket.id];
+        if(typeof userdata !== 'undefined'){ //checking if user that wants to disconnect actually exists
+            socket.leave(userdata.room); //making user leave the room
+            io.to(userdata.room).emit('message',{ //notifying other clients about user leaving
+                name:'System',
+                text: userdata.name+' has left the room',
+                timestamp:moment().valueOf()
+            });
+            delete client_info[socket.id]; //deleting the client_info for the user who left
+        }
+    });
+
     //emitting our events..here message is an event..it can be anything based on our requirements
     //first argument in emit is the event name and 2ns argument is the value..its best to use an object to store enough data since only 1 argument can be passed
     socket.emit('message',{
