@@ -24,7 +24,7 @@ io.on('connection',function(socket){
     
     socket.on('message',function(message){
         console.log('Message recieved: '+message.text);
-
+        
         //socket.broadcast.emit sends the message to every reciever except sender..use 'io.emit'' if you also want to send it msg sender
         //socket.broadcast.emit('message',message);
         message.timestamp=moment().valueOf();
