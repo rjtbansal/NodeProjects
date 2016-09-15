@@ -21,7 +21,7 @@ socket.on('connect', function(){
 socket.on('message', function(message){
     var momentTimestamp=moment.utc(message.timestamp); //getting utc timestamp
     console.log('New message from server --> '+message.text); //text was are key in the message object(check server.js)
-    $('.messages').append('<p><strong>'+ momentTimestamp.local().format('h:mm a') +' '+message.name+' </strong></p> <p>'+message.text+'</p>'); //getting local time 
+    $('.messages').append('<li class="list-group-item"><p><strong>'+ momentTimestamp.local().format('h:mm a') +' '+message.name+' </strong></p> <p>'+message.text+'</p></li>'); //getting local time 
 });
 
 //Handle message submit through form
